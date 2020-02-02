@@ -23,7 +23,7 @@ namespace Maze
             };
             return sampleMaze;
         }
-        // Check if cell is free (0) or there is a block (1) --- not checked that funtion works
+        // Check if cell is free (0) or there is a block (1)
         static int CheckCell(int currentPosX, int currentPosY, int newPosX, int newPosY, int[,] Maze)
         {
             newPosX += currentPosX;
@@ -85,9 +85,6 @@ namespace Maze
                     Console.WriteLine("Value x: {0} and y: {1}", key[0], key[1]);
                 }
             }
-
-            //Algorithm to move through the maze
-
         }
     }
 }
