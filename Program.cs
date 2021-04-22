@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Maze
+namespace New_maze
 {
     class Program
     {
-        static int [,] initializeMaze ()
+        static int[,] initializeMaze()
         {
             int[,] sampleMaze = new int[,]
             {
@@ -21,70 +21,47 @@ namespace Maze
                 {1, 1, 1, 0, 0, 1, 0, 0, 1},
                 {1, 1, 1, 1, 1, 1, 1, 0, 1}
             };
-            return sampleMaze;
-        }
-        // Check if cell is free (0) or there is a block (1)
-        static int CheckCell(int currentPosX, int currentPosY, int newPosX, int newPosY, int[,] Maze)
-        {
-            newPosX += currentPosX;
-            newPosY += currentPosY;
-            if ((newPosX >= 0 && newPosY >= 0) && (Maze[newPosY, newPosX] == 0))
-            {
-                //Console.WriteLine("Position : {0}, {1} New position: {2}, {3}. There is a 0", currentPosX, currentPosY, newPosX, newPosY); (Check)
-                return 0;
-            }
-            else
-            {
-                //Console.WriteLine("Position : {0}, {1} New position: {2}, {3}. There is a 1 or out of maze", currentPosX, currentPosY, newPosX, newPosY); (Check)
-                return 1;
-            }
 
+            return sampleMaze;
         }
 
         static void Main(string[] args)
         {
-            //Initilaze maze and its variables
+            //Initilaze maze
             int[,] newMaze = initializeMaze();
-            int mazeLength = newMaze.GetLength(1);
-            int mazeWidth = newMaze.GetLength(0);
-            int[,] visitedPos = new int[mazeLength * mazeWidth, 2];
-            int[] currentPos = new int[2];
-            //Visited intersections dictionary (x,y): (intersections, used)
-            Dictionary<int[], bool> Intersections = new Dictionary<int[], bool>();   
-            List<int[,]> path = new List<int[,]>();
+            int mazeLength = newMaze.GetLength(1); //y
+            int mazeWidth = newMaze.GetLength(0); //x
+            //Start and end positon
+            int[] startPos = new int[2];
+            int[] endPos = new int[2];
+            // Solution path
+            List<int[]> solution = new List<int[]>();
 
-            //Look for initial point (0, y+1)
-            for (int i = 0; i < mazeLength; i++)
+            Console.WriteLine("Maze instatiated");
+
+            //Start and end point (0, y) (l, y) (cntr k cntr c)
+            for (int i = 0; i <= mazeWidth-1; i++)
             {
-                int firstRow = newMaze[0, i];
-                if (firstRow == 0)
+                int firstrow = newMaze[0, i];
+                int lastrow = newMaze[i, mazeLength-1];
+                if (newMaze[0, i] == 0)
                 {
-                    currentPos[0] = i;
-                    currentPos[1] = 1;
+                    startPos[0] = i;
+                    startPos[1] = 0;
                 }
+                else if (newMaze[mazeLength-2, i] == 0) 
+                {
+                    endPos[0] = i;
+                    endPos[1] = mazeLength - 3; // one row up
+                }
+                else continue;
             }
 
-            //Check possible free positions
-            int isLeftFree = CheckCell(currentPos[0], currentPos[1], -1, 0, newMaze);
-            int isRightFree = CheckCell(currentPos[0], currentPos[1], 1, 0, newMaze);
-            int isUpFree = CheckCell(currentPos[0], currentPos[1], 0, -1, newMaze);
-            int isDownFree = CheckCell(currentPos[0], currentPos[1], 0, 1, newMaze);
+            Console.WriteLine("Length:{0} Width:{1} " +
+                "\n Initial Pos{2},{3} End Pos{4},{5}", mazeLength, mazeWidth, startPos[0], startPos[1], endPos[0], endPos[1]);
 
-            // Number of possible intersections 1-3 (no moving diagonally allowed)
-            // If 3 intersections save position, and used= false in dict
-            if(isLeftFree + isRightFree + isUpFree+ isDownFree < 2)
-            {
-                Intersections.Add(currentPos, false);
-                //it has been properly added (check)
-                foreach (var value in Intersections.Values)
-                {
-                    Console.WriteLine("Value is: {0}", value);
-                }
-                foreach (var key in Intersections.Keys)
-                {
-                    Console.WriteLine("Value x: {0} and y: {1}", key[0], key[1]);
-                }
-            }
+           Search firstSearch = new Search(newMaze, startPos, endPos);
+           solution = firstSearch.DFS_search(newMaze, startPos, endPos, mazeLength, mazeWidth);
         }
     }
 }
